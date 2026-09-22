@@ -56,4 +56,4 @@ c(78, 85, 64, 54, 102, 98.6)
 temperatureF <- c(78, 85, 64, 54, 102, 98.6)
 temperatureC <- (temperatureF - 32) * 5/9
 temperatureC[2]
-``` 
+```
