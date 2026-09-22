@@ -1,6 +1,6 @@
 ---
 title: "My First Report"
-author: "Your Name"
+author: "Cole Young"
 format:
   html:
     embed-resources: true
@@ -36,8 +36,24 @@ hist(patients$age,
 
 ## Your turn
 
-- Add a sentence here describing what you notice in the chart.
+- In this chart I noticed that the standard deviation is very low and that it is a normal dataset.
 - Render again and check that both your sentence and the chart appear.
 
 When you are happy with the result, **commit and sync** your work (the Week 2
 course page walks you through this), then submit your repository link on Canvas.
+
+## Assignment 1 Portion
+
+## **My Bolded Notes** 
+
+- This class I learned how to edit, save, and upload work using codespaces. 
+Previously, I was confused as to how to run the code given I mostly worked in the
+terminal but now with qmd files, rendering at html, and then committing to
+github, it is starting to make more sense. 
+
+```{r}
+c(78, 85, 64, 54, 102, 98.6)
+temperatureF <- c(78, 85, 64, 54, 102, 98.6)
+temperatureC <- (temperatureF - 32) * 5/9
+temperatureC[2]
+``` 
