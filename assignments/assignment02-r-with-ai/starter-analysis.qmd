@@ -162,12 +162,14 @@ coefficient_of_variation(nhanes$Weight)
  # the BMI and Weight columns 
  # of the nhanes dataset and 
  # checking the output.
- # This was verified by # # 
+ # This was verified by  
  # running the function on the 
  # BMI and Weight columns of 
  # the nhanes dataset and 
  # checking the output to 
  # ensure it was correct.
+ # The user also added comments 
+ # for the pupose of week 4 activity
 ```
 
 ## Save Output
