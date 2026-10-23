@@ -1,0 +1,11 @@
+# Quarto temporary/support files
+/.quarto/
+**/.quarto/
+*_files/
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Sensitive
+.env
