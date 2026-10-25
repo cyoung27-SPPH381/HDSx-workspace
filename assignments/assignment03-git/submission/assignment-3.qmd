@@ -1,0 +1,42 @@
+---
+title: "Week04 in class activity branching"
+format: html
+---
+
+## Setup
+
+```{r}
+install.packages("tidyverse")
+```
+
+Packages used: tidyverse. No packages were added beyond the course Codespace baseline.
+```{r}
+#| message: false
+#| warning: false
+library(tidyverse)  # AI-EDIT(2026-06-23): tidyverse-default — consolidated core library() calls into library(tidyverse)
+```
+
+```{r}
+library(tidyverse) # AI-EDIT(2026-06-23): tidyverse-default — consolidated core library() calls into library(tidyverse)
+
+candidate_paths <- c(
+  "examples/nhanes-equity/data/nhanes_equity_v6.csv",
+  "../../examples/nhanes-equity/data/nhanes_equity_v6.csv"
+)
+
+nhanes_path <- candidate_paths[file.exists(candidate_paths)][1]
+if (is.na(nhanes_path)) {
+  stop("Could not find examples/nhanes-equity/data/nhanes_equity_v6.csv")
+}
+
+nhanes_analysis <- read_csv(nhanes_path, show_col_types = FALSE)
+
+nhanes_analysis |>
+  summarise(
+    rows = n(),
+    missing_bmi = sum(is.na(BMI)),
+    missing_income = sum(is.na(IncomeGroup))
+  )
+
+```
+
