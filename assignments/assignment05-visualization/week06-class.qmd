@@ -6,10 +6,10 @@ format: html
 ## Setup
 
 ```{r}
-install.packages("tidyverse")
 library(tidyverse)
 ```
 
+## Viz02 Grammar of ggplot
 ```{r}
 candidate_paths <- c(
   "examples/nhanes-equity/data/nhanes_equity_v6.csv",
@@ -18,31 +18,23 @@ candidate_paths <- c(
 data_path <- candidate_paths[file.exists(candidate_paths)][1]
 nhanes <- read_csv(data_path, show_col_types = FALSE)
 
-ggplot(nhanes, aes(x = Age, y = Weight)) +
-  geom_point(alpha = 0.2) +
-  labs(
-    title = "Weight by age, NHANES Health Equity classroom dataset",
-    subtitle = "One point per record; unweighted, descriptive only",
-    x = "Age (years)",
-    y = "Weight (kg)"
-  ) +
-  theme_minimal()
-
 glimpse(nhanes)
-  ```
+```
 
 ```{r}
 
-nhanes_analysis |>
-  filter(!is.na(BMI), !is.na(IncomeGroup), Age >= 20, Age <= 80) |>
-  group_by(IncomeGroup) |>
-  summarise(
-    n = n(),
-    mean_bmi = round(mean(BMI), 1),
-    .groups = "drop"
-  )
-```
+ggplot(nhanes, aes(x = Age, y = BMI)) +
+  geom_point(alpha = 0.2) +
+  labs(
+    title = "BMI by age, NHANES Health Equity classroom dataset",
+    subtitle = "One point per record; unweighted, descriptive only",
+    x = "Age (years)",
+    y = "BMI"
+  ) +
+  theme_minimal()
+  ```
 
+## Viz03 Worked Example
 ```{r}
 library(tidyverse)
 
@@ -58,4 +50,172 @@ if (is.na(data_path)) {
 
 nhanes <- read_csv(data_path, show_col_types = FALSE)
 ```
+
+```{r}
+
+bmi_by_income_cycle <- nhanes |>
+  filter(
+    !is.na(BMI),
+    !is.na(IncomeGroup),
+    !is.na(Cycle),
+    Age >= 20,
+    Age <= 80
+  ) |>
+  group_by(Cycle, IncomeGroup) |>
+  summarise(
+    n = n(),
+    mean_bmi = mean(BMI),
+    .groups = "drop"
+  ) |>
+  filter(n >= 30)
+
+bmi_by_income_cycle
+
+```
+
+```{r}
+bmi_plot <- ggplot(
+  bmi_by_income_cycle,
+  aes(x = Cycle, y = mean_bmi, color = IncomeGroup, group = IncomeGroup)
+) +
+  geom_line(linewidth = 1.2) +
+  geom_point(size = 2.5) +
+  scale_color_brewer(palette = "Dark2") +
+  labs(
+    title = "Mean BMI by income group across NHANES cycle",
+    subtitle = "Adults age 20-80 in the prepared class dataset; unweighted descriptive summary",
+    x = "NHANES cycle",
+    y = "Mean BMI",
+    color = "Income group",
+    caption = "Unweighted descriptive summary; not a population estimate."
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.position = "bottom",
+    plot.caption = element_text(margin = margin(t = 8))
+  )
+
+bmi_plot
+
+# This figure shows 
+# [measure] by [group] 
+# across [time/
+# category] using the 
+# prepared NHANES 
+# Health Equity 
+# classroom dataset. The 
+# summary is descriptive 
+# and unweighted. 
+# Records with missing 
+# [variables] were 
+# excluded. The plot 
+# supports comparison of 
+# patterns, not causal 
+# claims or 
+# population-level 
+# estimates.
+```
+
+## Viz04 How a Plot can be Misled
+```{r}
+library(tidyverse) # AI-EDIT(2026-06-23): tidyverse-default — consolidated core library() calls into library(tidyverse)
+
+candidate_paths <- c(
+  "examples/nhanes-equity/data/nhanes_equity_v6.csv",
+  "../../examples/nhanes-equity/data/nhanes_equity_v6.csv"
+)
+data_path <- candidate_paths[file.exists(candidate_paths)][1]
+nhanes <- read_csv(data_path, show_col_types = FALSE)
+
+bmi_by_income_cycle <- nhanes |>
+  filter(!is.na(BMI), !is.na(IncomeGroup), !is.na(Cycle), Age >= 20, Age <= 80) |>
+  group_by(Cycle, IncomeGroup) |>
+  summarise(n = n(), mean_bmi = mean(BMI), .groups = "drop") |>
+  filter(n >= 30)
+```
+
+```{r}
+ggplot(
+  bmi_by_income_cycle,
+  aes(x = Cycle, y = mean_bmi, color = IncomeGroup, group = IncomeGroup)
+) +
+  geom_line(linewidth = 1.2) +
+  geom_point(size = 2.5) +
+  scale_color_brewer(palette = "Dark2") +
+  coord_cartesian(ylim = c(27.5, 31.5)) +
+  labs(
+    title = "Income level causes BMI to rise across NHANES cycles",
+    x = "NHANES cycle",
+    y = "Mean BMI",
+    color = "Income group"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1), legend.position = "bottom")
+  ```
+
+```{r}
+ggplot(
+  bmi_by_income_cycle,
+  aes(x = Cycle, y = mean_bmi, color = IncomeGroup, group = IncomeGroup)
+) +
+  geom_line(linewidth = 1.2) +
+  geom_point(size = 2.5) +
+  scale_color_brewer(palette = "Dark2") +
+  expand_limits(y = 0) +
+  labs(
+    title = "Mean BMI by income group across NHANES cycles",
+    subtitle = "Adults age 20-80 in the prepared class dataset; unweighted descriptive summary",
+    x = "NHANES cycle",
+    y = "Mean BMI",
+    color = "Income group",
+    caption = "Records with missing BMI, income, or cycle excluded; groups under n = 30 removed.\nDescriptive only, not a causal or population estimate."
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1), legend.position = "bottom")
+```
+
+## Viz05 AI Prompts You can Defend
+```{r}
+ggplot(
+  bmi_by_income_cycle,
+  aes(x = Cycle, y = mean_bmi, color = IncomeGroup, group = IncomeGroup)
+) +
+  geom_line() +
+  geom_point() +
+  labs(
+    x = "Cycle",
+    y = "Mean BMI",
+    color = "Income group"
+  ) +
+  theme_minimal()
+```
+
+```{r}
+glimpse(bmi_by_income_cycle)
+
+# The AI model made the Y axis Mean BMI and the X
+# axis Cycle. Column names match the data. 
+# The geometry is appropriate without any 
+# regression lines. The scaling, however, is not 
+# honest with the y-axis starting at around 27. The 
+# reason for this would be the actual range of the 
+# dataset being between 27.5 and 30.5 so it zooms 
+# into that range for the y-axis. The title adn 
+# subtitle are not descriptive, in fact there does 
+# not seem to be a title or caption present, only x 
+# and y axis and a legend. Therefore caption does 
+# not dislose exculsions or limitations, nor is na.
+# rm = TRUE used in code to remove missing values. 
+
+
+# AI prompt: "Plot mean_bmi by Cycle, one line per 
+# IncomeGroup, no smoothing"
+# Verified: columns match glimpse(); no smoother; 
+# descriptive title; caption lists exclusions
+
+```
+
+
+
 
