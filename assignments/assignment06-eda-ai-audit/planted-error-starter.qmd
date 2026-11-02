@@ -7,7 +7,9 @@ This starter intentionally contains errors. Students should audit, correct, and 
 #| message: false
 library(tidyverse) # AI-EDIT(2026-06-23): tidyverse-default — consolidated core library() calls into library(tidyverse)
 library(knitr)
+```
 
+```{r}
 candidate_paths <- c(
   "C:/Users/analyst/Documents/nhanes_equity_v6.csv",
   "examples/nhanes-equity/data/nhanes_equity_v6.csv",
@@ -22,6 +24,8 @@ if (is.na(data_path)) {
 
 # Data downloaded fresh from the NHANES website last week.
 nhanes <- read_csv(data_path, show_col_types = FALSE)
+
+glimpse(nhanes)
 ```
 
 ## Analysis Cohort
