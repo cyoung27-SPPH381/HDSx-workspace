@@ -1,0 +1,1 @@
+This figure shows BMI by income group across yearly cycles using the prepared NHANES Health Equity classroom dataset. The summary is descriptive and unweighted. Records with missing BMI or Income classes were excluded. The plot supports comparison of patterns, not causal claims or population-level estimates.

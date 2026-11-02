@@ -1,0 +1,64 @@
+
+```{r}
+library(readr)
+library(dplyr)
+library(ggplot2)
+
+candidate_paths <- c(
+  "C:/Users/analyst/Desktop/nhanes_equity_v6.csv",
+  "examples/nhanes-equity/data/nhanes_equity_v6.csv",
+  "../../../examples/nhanes-equity/data/nhanes_equity_v6.csv"
+)
+
+data_path <- candidate_paths[file.exists(candidate_paths)][1]
+if (is.na(data_path)) {
+  stop("Could not find nhanes_equity_v6.csv")
+}
+
+nhanes <- read_csv(data_path, show_col_types = FALSE)
+
+
+not_flawed_summary <- nhanes |>
+  filter(!is.na(BMI), !is.na(IncomeGroup)) |>
+  group_by(Cycle, IncomeGroup) |>
+  summarise(
+    mean_bmi = mean(BMI),
+    .groups = "drop"
+  )
+
+
+not_flawed_plot <- ggplot(
+  not_flawed_summary,
+  aes(x = Cycle, y = mean_bmi, color = IncomeGroup, group = IncomeGroup)
+) +
+  geom_point(size = 3) +
+  geom_line(linetype = "dashed", linewidth = 1) +
+  expand_limits(y = 0) +
+  labs(
+    title = "Average BMI for 
+ Varying Income Groups from 1999-2023, NHANES Health
+ Equity classroom dataset",
+    subtitle = "Adults age 20-80 in the prepared class dataset; 
+ unweighted descriptive summary",
+    x = "NHANES cycle",
+    y = "BMI",
+    color = "Income"
+  ) +
+  theme_minimal(base_size = 12)
+
+print(not_flawed_plot)
+```
+
+```{r}
+ggsave(
+  "assignments/assignment05-visualization/submission/corrected-plot.png",
+  plot = not_flawed_plot,
+  width = 7,
+  height = 5
+)
+```
+
+Revisions:
+Removed the “first and last cycle only” filter so all cycles are included.
+Replaced the truncated y-axis with a zero-based axis.
+Replaced the causal opinonated title/subtitle with neutral, descriptive language.
