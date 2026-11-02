@@ -5,7 +5,9 @@ This starter intentionally contains errors. Students should audit, correct, and 
 ```{r}
 #| label: planted-load-data
 #| message: false
-library(tidyverse) # AI-EDIT(2026-06-23): tidyverse-default — consolidated core library() calls into library(tidyverse)
+library(tidyverse) # AI-EDIT(2026-06-23): 
+tidyverse-default — consolidated core library() calls 
+into library(tidyverse)
 library(knitr)
 ```
 
