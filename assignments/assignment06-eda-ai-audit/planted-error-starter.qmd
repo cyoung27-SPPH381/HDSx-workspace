@@ -37,6 +37,12 @@ We kept adults age 20-80 (inclusive) for the analysis.
 analysis_df <- nhanes |>
   filter(Age > 20, Age < 80) |>
   na.omit()
+
+cohort_counts <- tibble(
+  step = c("Prepared CSV rows", "Rows after age 20-80 restriction"),
+  n = c(nrow(nhanes), nrow(analysis_df))
+)
+kable(cohort_counts)
 ```
 
 ## Table 1

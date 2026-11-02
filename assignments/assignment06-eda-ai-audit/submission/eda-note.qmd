@@ -1,0 +1,93 @@
+---
+title: "Assignment06 EDA note"
+format: html
+---
+
+```{r}
+library(tidyverse) 
+library(knitr)
+
+candidate_paths <- c(
+  "examples/nhanes-equity/data/nhanes_equity_v6.csv",
+  "../../examples/nhanes-equity/data/nhanes_equity_v6.csv"
+)
+
+data_path <- candidate_paths[file.exists(candidate_paths)][1]
+if (is.na(data_path)) {
+  stop("Could not find examples/nhanes-equity/data/nhanes_equity_v6.csv")
+}
+
+nhanes <- read_csv(data_path, show_col_types = FALSE)
+```
+
+## Define Analysis Cohort
+We decided to keep adults age 20-80 (inclusive) for the analysis. This allows us to summarize adult BMI summaries while avoiding children, adolescents, and extremely elderly records into our classroom table
+
+```{r}
+analysis_df <- nhanes |>
+  filter(Age >= 20, Age <= 80)
+
+cohort_counts <- tibble(
+  step = c("Prepared CSV rows", "Rows after age 20-80 restriction"),
+  n = c(nrow(nhanes), nrow(analysis_df))
+)
+
+kable(cohort_counts)
+```
+
+## Missingness Check
+```{r}
+key_vars <- c("BMI", "Age", "IncomeGroup", "Gender", "Race", "Cycle")
+
+missingness <- tibble(variable = key_vars) |>
+  mutate(
+    missing_n = vapply(analysis_df[key_vars], function(x) sum(is.na(x)), numeric(1)),
+    missing_percent = round(100 * missing_n / nrow(analysis_df), 1)
+  )
+
+kable(missingness) 
+## Both BMI and IncomeGroup have missing values, so we
+## will filter out those records for the Table 1 style 
+## summary.
+```
+
+## Table 1 Style Description Summary
+```{r}
+mean_sd <- function(x) {
+  sprintf("%.1f (%.1f)", mean(x, na.rm = TRUE), sd(x, na.rm = TRUE))
+}
+
+table1 <- analysis_df |>
+    filter(!is.na(BMI) & !is.na(IncomeGroup)) |>
+  group_by(IncomeGroup) |>
+  summarise(
+    N = n(),
+    `BMI, mean (SD)` = mean_sd(BMI),
+    `Age, mean (SD)` = mean_sd(Age),
+    .groups = "drop"
+  )
+
+## Filter is seen above given the missingness table
+
+kable(table1)
+write_csv(table1, "table1.csv")
+
+
+## AI use note: AI was used to help draft code to transfer
+## the table1 created in the terminal to a CSV file. The 
+## AI prompt was: Can you create a code that will create 
+## a csv file called "table1.csv" derived from the table 
+## 1 style description summary in the eda-note.qmd lines 
+## 50-65. Verified: Checked the file table1.csv file and 
+## confirmed that it has the same information as the 
+## output of the Table 1 descripion summary.
+```
+
+## Methods note
+We used the prepared NHANES Health Equity classroom CSV 
+snapshot. The analysis cohort included records with age 
+20-80. We summarized BMI and age by income group using 
+unweighted descriptive statistics. Missing values were 
+checked before summarizing. These summaries describe the 
+prepared class dataset and should not be interpreted as 
+causal effects or population estimates.
