@@ -1,0 +1,1 @@
+Source: prepared classroom snapshot derived from CDC/NCHS NHANES public-use data. Results are descriptive and unweighted.
